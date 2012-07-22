@@ -245,10 +245,11 @@ static int __init hello_init(void)
 	struct task_struct *kgen_task;
 	char* ptr=NULL;
 	int len=0x100000;//1M空间
-	// ************************<IRQ> ********************************
+	struct semaphore g_sem;
 	int ret;
-	//int rv=0;
 	int ulVAddr=0;
+	// ************************<IRQ> ********************************
+	//int rv=0;
 	// 
 	ulVAddr=(int)ioremap_nocache(0x56000050,4096);//GPFCON
 	*(int*)ulVAddr=0x55aa;//设置成中断模式[输入/输出/中断]
@@ -303,8 +304,11 @@ static int __init hello_init(void)
 	//printk("ptr(str)=%s\n",ptr);	
 	printk("sizeof big malloc(str) 0x%x\n",strlen(ptr));
 	free_pages((int)ptr,get_order(len));//释放
+//#define THREAD
+#ifdef THREAD
 	//****************** 创建内核线程*********************************
 	//创建并唤醒 create and warkup
+	//参数3 线程名字 ps看到的
 	kgen_task =kthread_run((void *)mythread,"kthread arg","thread1");
 	//非占用的延时
 	set_current_state(TASK_INTERRUPTIBLE);
@@ -312,6 +316,17 @@ static int __init hello_init(void)
 	schedule_timeout(HZ); //HZ是宏定义
 	ret=kthread_stop(kgen_task); //等待线程结束
 	printk("stop thread ret %d\n",ret);
+#endif
+#define MUTEX
+#ifdef MUTEX
+	//*************************互斥锁 **************************
+	init_MUTEX(&g_sem);//初始化互斥锁
+	ret=down_interruptible(&g_sem);//锁
+	printk("down interrupt return %d\n",ret);
+	ret=down_trylock(&g_sem);
+	printk("down trylock return %d\n",ret);
+	up(&g_sem);//解锁
+#endif
 	//************************* 初始化模块时调用******************
 	printk(KERN_ALERT "*k* insmod: Hello, world\n");
 	//注册
