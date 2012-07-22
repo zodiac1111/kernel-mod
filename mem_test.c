@@ -190,6 +190,7 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 	return 0;
 }
 #endif
+//一系列函数指针,指向驱动操作的种种
 struct file_operations fops=
 {
 	.owner=THIS_MODULE,
@@ -200,11 +201,19 @@ struct file_operations fops=
 	.mmap=scull_mmap,
 	.ioctl=scull_ioctl
 };
+//中断服务程序
 irqreturn_t drv_int_handler(int irq,void * dev_id)
 {
-	printk("drv int \n");
+	printk("drv int0\n");
 	return IRQ_HANDLED;
 }
+//中断服务程序2
+irqreturn_t drv_int_handler_eint1(int irq,void * dev_id)
+{
+	printk("drv int1 \n");
+	return IRQ_HANDLED;
+}
+// __init调用后释放内存
 static int __init hello_init(void)
 {
 	// <IRQ>
@@ -219,12 +228,26 @@ static int __init hello_init(void)
 	//
 	ulVAddr=(int)ioremap_nocache(0x56000088,4096);//EXTINT0 
 	*(int*)ulVAddr &= 0xfffffe00;//设置中断类别[高低/跳变]
-	*(int*)ulVAddr = 0x92;//01x
+	*(int*)ulVAddr |= 0x1b6;//0b1 1011 0110= 110 110 110 
 	//
-	free_irq(IRQ_EINT0,0);
+	free_irq(IRQ_EINT0,(void *)0);
+	//request_irq 注册中断服务
+	/* 1 发生这个中断时
+	 * 2 调用这个中断服务程序
+	 * 3 指定快速中断标志flags
+	 * 4 通常是设备驱动程序的名称
+	 * 5 可作为共享中断时的中断区别参数，
+	 *   也可以用来指定中断服务函数需要参考的数据地址
+	 * */
 	if(request_irq(IRQ_EINT0,drv_int_handler,SA_INTERRUPT,"int1",NULL)){
-		printk("INT enable error \n");
+		printk("INT0 enable error \n");
 	}
+	/*
+	free_irq(IRQ_EINT1,(void *)0);
+	if(request_irq(IRQ_EINT1,drv_int_handler_eint1,SA_INTERRUPT,"int1",NULL)){
+		printk("INT1 enable error \n");
+	}
+	*/
 	/*
 	free_irq(IRQ_EINT1,1);
 	if(request_irq(IRQ_EINT1,drv_int_handler,SA_INTERRUPT,"int2",NULL)){
@@ -233,6 +256,22 @@ static int __init hello_init(void)
 	*/
 	//
 	//</IRQ>
+	// 1 简单kmalloc
+	char* ptr=NULL;
+	ptr=(char *)kmalloc(1000,GFP_KERNEL);
+	printk("ptr=%X",ptr);
+	kfree(ptr);
+	// 2 DMA no cache 为不设备可以直接访问
+	ptr=(char *)kmalloc(1000,GFP_KERNEL|GFP_DMA);
+	printk("ptr=%X",ptr);
+	kfree(ptr);
+	// 3 大于 128k后备(分配大内存)
+	//基本业 4096 参数2= 2^<参数2>页 例如2^0*4096[byte]
+	//分配1M计算麻烦 系统提供get_order
+	int len=0x100000;//1M空间
+	printk("get order %d\n",get_order(len));
+	ptr=__get_free_pages(GFP_KERNEL,get_order(len));
+	free_pages(ptr,get_order(len));
 	printk(KERN_ALERT "*k* Hello, world\n");
 	//注册
 	ret=register_chrdev(422, "my char dev ", &fops);
