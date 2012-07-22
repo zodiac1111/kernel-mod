@@ -301,6 +301,7 @@ static int __init hello_init(void)
 	printk("sizeof big malloc(str) 0x%x\n",strlen(ptr));
 	free_pages((int)ptr,get_order(len));//释放
 	//****************** 创建内核线程*********************************
+	//创建并唤醒 create and warkup
 	kgen_task =kthread_run((void *)mythread,"kthread arg","thread1");
 	//非占用的延时
 	set_current_state(TASK_INTERRUPTIBLE);
