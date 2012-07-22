@@ -418,6 +418,7 @@ deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
     $(wildcard include/config/swap.h) \
   include/linux/vmstat.h \
     $(wildcard include/config/vm/event/counters.h) \
+  include/linux/kthread.h \
   include/asm/arch/regs-gpio.h \
   include/asm/arch/regs-irq.h \
   include/linux/irq.h \

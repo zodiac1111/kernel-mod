@@ -20,12 +20,14 @@ MODULE_LICENSE("Dual BSD/GPL");
 #include <asm/pgtable.h>
 #include <linux/kernel.h> /* printk() */
 #include <linux/fs.h> /* everything... */
+#include <linux/kthread.h>
 //#include <linuxev.h>
 #include <asm/arch/regs-gpio.h>
 #include <asm/arch/regs-irq.h>
 #include <asm/uaccess.h> /* copy_to_user() */
 #include <linux/delay.h>	/* mdelay() */
 #include <linux/irq.h>
+static int mythread(char *ptr);
 int scull_open(struct inode *inode, struct file *filp)
 {
 	int minor=MINOR(inode->i_rdev);
@@ -144,6 +146,7 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 	int i;
 	int ledno=0;
 	int getled;
+	struct task_struct *kgen_task;
 	printk("cmd=%d arg=%ld\n",cmd,arg);
 	//第一个参数 第几个LED
 	switch(cmd){
@@ -158,6 +161,12 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			break;
 		case 4:
 			ledno=0x80;//0b1000 0000
+			break;
+		case 5:	//利用ioctl创建线程
+			kgen_task =
+				kthread_run((void *)mythread,
+						"kthread arg2","thread1");
+			return 0;
 			break;
 		default:
 			printk("err led number,must be 1~4\n");
@@ -213,14 +222,31 @@ irqreturn_t drv_int_handler_eint1(int irq,void * dev_id)
 	printk("drv int1 \n");
 	return IRQ_HANDLED;
 }
+static int mythread(char *ptr)
+{
+	int i;
+	printk("ptr is %s\n",ptr);
+	for(i=0;i<10;i++){
+		printk("kthread\n");
+		//非占用的延时
+		set_current_state(TASK_INTERRUPTIBLE);
+		//等到HZ个调度周期=1秒
+		schedule_timeout(HZ); //HZ是宏定义
+
+	}
+	return 0;
+}
 // __init调用后释放内存
 static int __init hello_init(void)
 {
-	// <IRQ>
+	struct task_struct *kgen_task;
+	char* ptr=NULL;
+	int len=0x100000;//1M空间
+	// ************************<IRQ> ********************************
 	int ret;
 	//int rv=0;
 	int ulVAddr=0;
-	//
+	// 
 	ulVAddr=(int)ioremap_nocache(0x56000050,4096);//GPFCON
 	*(int*)ulVAddr=0x55aa;//设置成中断模式[输入/输出/中断]
 	//释放映射
@@ -229,7 +255,8 @@ static int __init hello_init(void)
 	ulVAddr=(int)ioremap_nocache(0x56000088,4096);//EXTINT0 
 	*(int*)ulVAddr &= 0xfffffe00;//设置中断类别[高低/跳变]
 	*(int*)ulVAddr |= 0x1b6;//0b1 1011 0110= 110 110 110 
-	//
+	iounmap((void *)ulVAddr);
+	//先注销
 	free_irq(IRQ_EINT0,(void *)0);
 	//request_irq 注册中断服务
 	/* 1 发生这个中断时
@@ -242,37 +269,46 @@ static int __init hello_init(void)
 	if(request_irq(IRQ_EINT0,drv_int_handler,SA_INTERRUPT,"int1",NULL)){
 		printk("INT0 enable error \n");
 	}
-	/*
-	free_irq(IRQ_EINT1,(void *)0);
-	if(request_irq(IRQ_EINT1,drv_int_handler_eint1,SA_INTERRUPT,"int1",NULL)){
+	//中断服务表源于 源代码驱动中 utulinux/drive/input/keybord中定义 	
+	free_irq(IRQ_EINT1,(void *)1);
+	if(request_irq(IRQ_EINT1,
+				drv_int_handler_eint1,
+				SA_INTERRUPT,
+				"int1",(void *)1)){
 		printk("INT1 enable error \n");
-	}
-	*/
-	/*
-	free_irq(IRQ_EINT1,1);
-	if(request_irq(IRQ_EINT1,drv_int_handler,SA_INTERRUPT,"int2",NULL)){
-		printk("INT enable error \n");
-	}
-	*/
-	//
+	}	
 	//</IRQ>
+	//****************************** 内存分配 内核*****************
 	// 1 简单kmalloc
-	char* ptr=NULL;
 	ptr=(char *)kmalloc(1000,GFP_KERNEL);
-	printk("ptr=%X",ptr);
+	printk("ptr=%p\n",ptr);
+	memset(ptr,0,1000);
+	*ptr='a';*(ptr+1)='b';*(ptr+2)='\0';
+	printk("ptr(str)=%s\n",ptr);
 	kfree(ptr);
 	// 2 DMA no cache 为不设备可以直接访问
 	ptr=(char *)kmalloc(1000,GFP_KERNEL|GFP_DMA);
-	printk("ptr=%X",ptr);
+	printk("ptr=%p\n",ptr);
 	kfree(ptr);
 	// 3 大于 128k后备(分配大内存)
 	//基本业 4096 参数2= 2^<参数2>页 例如2^0*4096[byte]
 	//分配1M计算麻烦 系统提供get_order
-	int len=0x100000;//1M空间
 	printk("get order %d\n",get_order(len));
-	ptr=__get_free_pages(GFP_KERNEL,get_order(len));
-	free_pages(ptr,get_order(len));
-	printk(KERN_ALERT "*k* Hello, world\n");
+	ptr=(char *)__get_free_pages(GFP_KERNEL,get_order(len));//分配
+	memset(ptr,'b',len);//使用
+	*(ptr+len-1)='\0';
+	//printk("ptr(str)=%s\n",ptr);	
+	printk("sizeof big malloc(str) 0x%x\n",strlen(ptr));
+	free_pages((int)ptr,get_order(len));//释放
+	//****************** 创建内核线程*********************************
+	kgen_task =kthread_run((void *)mythread,"kthread arg","thread1");
+	//非占用的延时
+	set_current_state(TASK_INTERRUPTIBLE);
+	//等到HZ个调度周期=1秒
+	schedule_timeout(HZ); //HZ是宏定义
+	kthread_stop(kgen_task);
+	//************************* 初始化模块时调用******************
+	printk(KERN_ALERT "*k* insmod: Hello, world\n");
 	//注册
 	ret=register_chrdev(422, "my char dev ", &fops);
 	if(ret<0){
@@ -283,7 +319,7 @@ static int __init hello_init(void)
 }
 static void hello_exit(void)
 {
-	printk(KERN_ALERT "*k* Goodbye, cur world\n");
+	printk(KERN_ALERT "*k* rmmod: Goodbye, cur world\n");
 	//反注册
 	unregister_chrdev(422, "my char dev");
 
