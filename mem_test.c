@@ -232,9 +232,12 @@ static int mythread(char *ptr)
 		set_current_state(TASK_INTERRUPTIBLE);
 		//等到HZ个调度周期=1秒
 		schedule_timeout(HZ); //HZ是宏定义
-
+		//情况2 检查停止信号
+		if(kthread_should_stop())//检查是否需要(提前)退出
+			break;
 	}
-	return 0;
+	//如果线程函数永远不返回并且不检查信号，它将永远都不会停止。
+	return 0; // 情况1 返回
 }
 // __init调用后释放内存
 static int __init hello_init(void)
@@ -307,7 +310,8 @@ static int __init hello_init(void)
 	set_current_state(TASK_INTERRUPTIBLE);
 	//等到HZ个调度周期=1秒
 	schedule_timeout(HZ); //HZ是宏定义
-	kthread_stop(kgen_task);
+	ret=kthread_stop(kgen_task); //等待线程结束
+	printk("stop thread ret %d\n",ret);
 	//************************* 初始化模块时调用******************
 	printk(KERN_ALERT "*k* insmod: Hello, world\n");
 	//注册
