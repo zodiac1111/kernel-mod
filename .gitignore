@@ -15,7 +15,12 @@
 *.bmp
 *.png
 *.264
-
+18b20
+a.out
+app
+ioctl
+*.ko
+*.mod*
 #qt项目配置文件
 *.user
 
