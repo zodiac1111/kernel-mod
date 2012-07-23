@@ -1,7 +1,7 @@
-cmd_/home/zodiac1111/arm/kernel-mod/mem_test.o := arm-linux-gcc -Wp,-MD,/home/zodiac1111/arm/kernel-mod/.mem_test.o.d  -nostdinc -isystem /home/zodiac1111/Mysoft/usr/local/arm/3.4.1/bin/../lib/gcc/arm-linux/3.4.1/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -mlittle-endian -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -O2 -marm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -mapcs-32 -mno-thumb-interwork -D__LINUX_ARM_ARCH__=4 -march=armv4t -mtune=arm9tdmi -malignment-traps -msoft-float -Uarm -fno-omit-frame-pointer -fno-optimize-sibling-calls  -Wdeclaration-after-statement     -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(mem_test)"  -D"KBUILD_MODNAME=KBUILD_STR(mem_test)" -c -o /home/zodiac1111/arm/kernel-mod/mem_test.o /home/zodiac1111/arm/kernel-mod/mem_test.c
+cmd_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.o := arm-linux-gcc -Wp,-MD,/home/zodiac1111/arm/kernel-mod/api/.kgen_plat.o.d  -nostdinc -isystem /home/zodiac1111/Mysoft/usr/local/arm/3.4.1/bin/../lib/gcc/arm-linux/3.4.1/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -mlittle-endian -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -O2 -marm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -mapcs-32 -mno-thumb-interwork -D__LINUX_ARM_ARCH__=4 -march=armv4t -mtune=arm9tdmi -malignment-traps -msoft-float -Uarm -fno-omit-frame-pointer -fno-optimize-sibling-calls  -Wdeclaration-after-statement     -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(kgen_plat)"  -D"KBUILD_MODNAME=KBUILD_STR(kgen_plat)" -c -o /home/zodiac1111/arm/kernel-mod/api/kgen_plat.o /home/zodiac1111/arm/kernel-mod/api/kgen_plat.c
 
-deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
-  /home/zodiac1111/arm/kernel-mod/mem_test.c \
+deps_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.o := \
+  /home/zodiac1111/arm/kernel-mod/api/kgen_plat.c \
   include/linux/init.h \
     $(wildcard include/config/modules.h) \
     $(wildcard include/config/hotplug.h) \
@@ -420,7 +420,6 @@ deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
     $(wildcard include/config/vm/event/counters.h) \
   include/linux/kthread.h \
   include/asm/arch/regs-gpio.h \
-  include/asm-arm/arch/regs-gpioj.h \
   include/asm/arch/regs-irq.h \
   include/linux/irq.h \
     $(wildcard include/config/irq/per/cpu.h) \
@@ -434,7 +433,12 @@ deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
   include/asm/hw_irq.h \
     $(wildcard include/config/no/idle/hz.h) \
   include/asm/mach/irq.h \
+  /home/zodiac1111/arm/kernel-mod/api/kgen_platform.h \
+  /home/zodiac1111/arm/kernel-mod/api/kgen_malloc.h \
+  /home/zodiac1111/arm/kernel-mod/api/kgen_thrd.h \
+  /home/zodiac1111/arm/kernel-mod/api/kgen_mute.h \
+  /home/zodiac1111/arm/kernel-mod/api/kgen_msgq.h \
 
-/home/zodiac1111/arm/kernel-mod/mem_test.o: $(deps_/home/zodiac1111/arm/kernel-mod/mem_test.o)
+/home/zodiac1111/arm/kernel-mod/api/kgen_plat.o: $(deps_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.o)
 
-$(deps_/home/zodiac1111/arm/kernel-mod/mem_test.o):
+$(deps_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.o):

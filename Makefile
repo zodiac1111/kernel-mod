@@ -2,7 +2,7 @@ LINUX_KERNEL_DIR =/home/zodiac1111/Downloads/techer-ftp/devboard/kernel/utu-Linu
 #LINUX_KERNEL_DIR =/home/zodiac1111/Downloads/linux-3.4.4
 PRODUCT_DRIVER_DIR = `pwd`
 obj-m += mem_test.o
-all: clear module app wdt ioctl
+all:  plat module app wdt ioctl 18b20
 #	make module
 #	make app
 #	make wdt
@@ -25,5 +25,11 @@ wdt:wdt.c
 ioctl:ioctl.c
 	arm-linux-gcc ioctl.c -o ioctl -Wall
 	cp ioctl /home/zodiac1111/tftpboot  
+#
+18b20:18b20.c
+	arm-linux-gcc 18b20.c -o 18b20 -Wall
+	cp 18b20 /home/zodiac1111/tftpboot  
 clean:
-	rm -rf *.ko *.o *.swp *.cmd app a.out wdt
+	rm -rf *.ko  *.o *.swp *.cmd app a.out wdt
+plat:
+	make -C api 

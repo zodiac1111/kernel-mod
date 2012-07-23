@@ -1,14 +1,13 @@
-#include<stdio.h>
+#include <stdio.h>
+
+char *strA()
+{
+	char str[] = "hello world!";
+	return str;
+}
+
 int main()
 {
-	struct st{
-		char a;
-		int b;
-		char c;
-		short d;
-		double e;
-	}st1;
-	printf("sizeof %d\n",sizeof(st1));
-
+	printf("%s\n", strA());
 	return 0;
 }

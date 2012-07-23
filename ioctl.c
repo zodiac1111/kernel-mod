@@ -20,7 +20,7 @@ struct st{
 int main(int argc,char* argv[])
 {
 	int fd;
-	char *ptr="zodiac\n";
+	//char *ptr="zodiac\n";
 	int cmd=4;
 	int ret=0;
 	int arg=0;
@@ -43,11 +43,12 @@ int main(int argc,char* argv[])
 	//ret =ioctl(fd,cmd,&st1);
 	//for led ctl
 	arg=strtoul(argv[2],0,10);
+	//ret =ioctl(fd,3,3);
 	ret =ioctl(fd,cmd,arg);
 	usleep(100000);
 	//返回值放在errno里面了
 	printf("err %d\n", errno);
-	printf("ret: %d cmd %d, ptr %s\n",ret,cmd,ptr);
+	printf("ret: %d cmd %d, retval=%f \n",ret,cmd,ret*0.0625);
 	usleep(100000);
 	close(fd);
 	return 0;

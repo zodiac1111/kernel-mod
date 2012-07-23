@@ -1,0 +1,1 @@
+cmd_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.ko := arm-linux-ld -EL -r    -o /home/zodiac1111/arm/kernel-mod/api/kgen_plat.ko /home/zodiac1111/arm/kernel-mod/api/kgen_plat.o /home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.o

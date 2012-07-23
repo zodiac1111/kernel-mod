@@ -1,29 +1,24 @@
-cmd_/home/zodiac1111/arm/kernel-mod/mem_test.o := arm-linux-gcc -Wp,-MD,/home/zodiac1111/arm/kernel-mod/.mem_test.o.d  -nostdinc -isystem /home/zodiac1111/Mysoft/usr/local/arm/3.4.1/bin/../lib/gcc/arm-linux/3.4.1/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -mlittle-endian -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -O2 -marm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -mapcs-32 -mno-thumb-interwork -D__LINUX_ARM_ARCH__=4 -march=armv4t -mtune=arm9tdmi -malignment-traps -msoft-float -Uarm -fno-omit-frame-pointer -fno-optimize-sibling-calls  -Wdeclaration-after-statement     -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(mem_test)"  -D"KBUILD_MODNAME=KBUILD_STR(mem_test)" -c -o /home/zodiac1111/arm/kernel-mod/mem_test.o /home/zodiac1111/arm/kernel-mod/mem_test.c
+cmd_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.o := arm-linux-gcc -Wp,-MD,/home/zodiac1111/arm/kernel-mod/api/.kgen_plat.mod.o.d  -nostdinc -isystem /home/zodiac1111/Mysoft/usr/local/arm/3.4.1/bin/../lib/gcc/arm-linux/3.4.1/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -mlittle-endian -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -O2 -marm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -mapcs-32 -mno-thumb-interwork -D__LINUX_ARM_ARCH__=4 -march=armv4t -mtune=arm9tdmi -malignment-traps -msoft-float -Uarm -fno-omit-frame-pointer -fno-optimize-sibling-calls  -Wdeclaration-after-statement     -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(kgen_plat.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(kgen_plat)" -DMODULE -c -o /home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.o /home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.c
 
-deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
-  /home/zodiac1111/arm/kernel-mod/mem_test.c \
-  include/linux/init.h \
-    $(wildcard include/config/modules.h) \
-    $(wildcard include/config/hotplug.h) \
-    $(wildcard include/config/hotplug/cpu.h) \
-    $(wildcard include/config/memory/hotplug.h) \
-    $(wildcard include/config/acpi/hotplug/memory.h) \
-  include/linux/compiler.h \
-    $(wildcard include/config/enable/must/check.h) \
-    $(wildcard include/config/enable/warn/deprecated.h) \
-  include/linux/compiler-gcc3.h \
-  include/linux/compiler-gcc.h \
+deps_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.o := \
+  /home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.c \
+    $(wildcard include/config/module/unload.h) \
   include/linux/module.h \
+    $(wildcard include/config/modules.h) \
     $(wildcard include/config/modversions.h) \
     $(wildcard include/config/unused/symbols.h) \
     $(wildcard include/config/generic/bug.h) \
-    $(wildcard include/config/module/unload.h) \
     $(wildcard include/config/kallsyms.h) \
     $(wildcard include/config/markers.h) \
     $(wildcard include/config/sysfs.h) \
   include/linux/list.h \
     $(wildcard include/config/debug/list.h) \
   include/linux/stddef.h \
+  include/linux/compiler.h \
+    $(wildcard include/config/enable/must/check.h) \
+    $(wildcard include/config/enable/warn/deprecated.h) \
+  include/linux/compiler-gcc3.h \
+  include/linux/compiler-gcc.h \
   include/linux/poison.h \
   include/linux/prefetch.h \
   include/linux/types.h \
@@ -154,6 +149,7 @@ deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
     $(wildcard include/config/cpu/abrt/ev7.h) \
   include/asm-generic/page.h \
   include/linux/kobject.h \
+    $(wildcard include/config/hotplug.h) \
   include/linux/sysfs.h \
   include/linux/kref.h \
   include/linux/wait.h \
@@ -162,6 +158,10 @@ deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
     $(wildcard include/config/alpha.h) \
     $(wildcard include/config/ia64.h) \
     $(wildcard include/config/ppc64.h) \
+  include/linux/init.h \
+    $(wildcard include/config/hotplug/cpu.h) \
+    $(wildcard include/config/memory/hotplug.h) \
+    $(wildcard include/config/acpi/hotplug/memory.h) \
   include/linux/marker.h \
   include/asm/local.h \
   include/asm-generic/local.h \
@@ -243,198 +243,9 @@ deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
     $(wildcard include/config/cpu/s3c2443.h) \
   include/linux/irq_cpustat.h \
   include/asm/module.h \
-  include/linux/sched.h \
-    $(wildcard include/config/sched/debug.h) \
-    $(wildcard include/config/detect/softlockup.h) \
-    $(wildcard include/config/split/ptlock/cpus.h) \
-    $(wildcard include/config/keys.h) \
-    $(wildcard include/config/bsd/process/acct.h) \
-    $(wildcard include/config/taskstats.h) \
-    $(wildcard include/config/audit.h) \
-    $(wildcard include/config/inotify/user.h) \
-    $(wildcard include/config/posix/mqueue.h) \
-    $(wildcard include/config/fair/user/sched.h) \
-    $(wildcard include/config/schedstats.h) \
-    $(wildcard include/config/task/delay/acct.h) \
-    $(wildcard include/config/fair/group/sched.h) \
-    $(wildcard include/config/blk/dev/io/trace.h) \
-    $(wildcard include/config/cc/stackprotector.h) \
-    $(wildcard include/config/sysvipc.h) \
-    $(wildcard include/config/security.h) \
-    $(wildcard include/config/rt/mutexes.h) \
-    $(wildcard include/config/task/xacct.h) \
-    $(wildcard include/config/cpusets.h) \
-    $(wildcard include/config/cgroups.h) \
-    $(wildcard include/config/futex.h) \
-    $(wildcard include/config/compat.h) \
-    $(wildcard include/config/fault/injection.h) \
-  include/linux/capability.h \
-  include/linux/rbtree.h \
-  include/linux/mm_types.h \
-  include/linux/auxvec.h \
-  include/asm/auxvec.h \
-  include/linux/prio_tree.h \
-  include/linux/completion.h \
-  include/asm/mmu.h \
-    $(wildcard include/config/cpu/has/asid.h) \
-  include/asm/semaphore.h \
-  include/asm/locks.h \
-  include/asm/cputime.h \
-  include/asm-generic/cputime.h \
-  include/linux/sem.h \
-  include/linux/ipc.h \
-  include/asm/ipcbuf.h \
-  include/asm/sembuf.h \
-  include/linux/signal.h \
-  include/asm/signal.h \
-  include/asm-generic/signal.h \
-  include/asm/sigcontext.h \
-  include/asm/siginfo.h \
-  include/asm-generic/siginfo.h \
-  include/linux/securebits.h \
-  include/linux/fs_struct.h \
-  include/linux/pid.h \
-  include/linux/rcupdate.h \
-  include/linux/proportions.h \
-  include/linux/percpu_counter.h \
-  include/linux/seccomp.h \
-    $(wildcard include/config/seccomp.h) \
-  include/linux/futex.h \
-  include/linux/rtmutex.h \
-    $(wildcard include/config/debug/rt/mutexes.h) \
-  include/linux/plist.h \
-    $(wildcard include/config/debug/pi/list.h) \
-  include/linux/param.h \
-  include/linux/resource.h \
-  include/asm/resource.h \
-  include/asm-generic/resource.h \
-  include/linux/hrtimer.h \
-    $(wildcard include/config/high/res/timers.h) \
-  include/linux/task_io_accounting.h \
-    $(wildcard include/config/task/io/accounting.h) \
-  include/linux/aio.h \
-  include/linux/aio_abi.h \
-  include/linux/uio.h \
-  include/linux/poll.h \
-  include/asm/poll.h \
-  include/asm-generic/poll.h \
-  include/linux/fs.h \
-    $(wildcard include/config/dnotify.h) \
-    $(wildcard include/config/quota.h) \
-    $(wildcard include/config/inotify.h) \
-    $(wildcard include/config/epoll.h) \
-    $(wildcard include/config/auditsyscall.h) \
-    $(wildcard include/config/block.h) \
-    $(wildcard include/config/fs/xip.h) \
-    $(wildcard include/config/migration.h) \
-  include/linux/limits.h \
-  include/linux/ioctl.h \
-  include/asm/ioctl.h \
-  include/asm-generic/ioctl.h \
-  include/linux/kdev_t.h \
-  include/linux/dcache.h \
-    $(wildcard include/config/profiling.h) \
-  include/linux/namei.h \
-  include/linux/radix-tree.h \
-  include/linux/quota.h \
-  include/linux/dqblk_xfs.h \
-  include/linux/dqblk_v1.h \
-  include/linux/dqblk_v2.h \
-  include/linux/nfs_fs_i.h \
-  include/linux/nfs.h \
-  include/linux/sunrpc/msg_prot.h \
-  include/linux/fcntl.h \
-  include/asm/fcntl.h \
-  include/asm-generic/fcntl.h \
-    $(wildcard include/config/64bit.h) \
-  include/linux/err.h \
-  include/asm/uaccess.h \
-  include/linux/delay.h \
-  include/asm/delay.h \
-  include/linux/ioport.h \
-  include/linux/interrupt.h \
-    $(wildcard include/config/generic/irq/probe.h) \
-    $(wildcard include/config/proc/fs.h) \
-  include/linux/irqreturn.h \
-  include/asm/io.h \
-  include/asm/arch/io.h \
-  include/asm/hardware.h \
-  include/asm/arch/hardware.h \
-    $(wildcard include/config/cpu/s3c2400.h) \
-    $(wildcard include/config/cpu/s3c2440.h) \
-    $(wildcard include/config/no/multiword/io.h) \
-  include/asm/arch/map.h \
-    $(wildcard include/config/cpu/s3c2412.h) \
-    $(wildcard include/config/cpu/s3c2413.h) \
-    $(wildcard include/config/cpu/s3c2412/only.h) \
-  include/asm/plat-s3c/map.h \
-  include/linux/mm.h \
-    $(wildcard include/config/sysctl.h) \
-    $(wildcard include/config/stack/growsup.h) \
-    $(wildcard include/config/debug/vm.h) \
-    $(wildcard include/config/shmem.h) \
-    $(wildcard include/config/debug/pagealloc.h) \
-  include/linux/debug_locks.h \
-    $(wildcard include/config/debug/locking/api/selftests.h) \
-  include/linux/security.h \
-    $(wildcard include/config/security/network.h) \
-    $(wildcard include/config/security/network/xfrm.h) \
-  include/linux/binfmts.h \
-  include/linux/shm.h \
-  include/asm/shmparam.h \
-  include/asm/shmbuf.h \
-  include/linux/msg.h \
-  include/asm/msgbuf.h \
-  include/linux/key.h \
-  include/linux/xfrm.h \
-  include/net/flow.h \
-  include/linux/in6.h \
-  include/asm/pgtable.h \
-  include/asm-generic/4level-fixup.h \
-  include/asm/proc-fns.h \
-    $(wildcard include/config/cpu/32.h) \
-    $(wildcard include/config/cpu/arm7tdmi.h) \
-    $(wildcard include/config/cpu/arm720t.h) \
-    $(wildcard include/config/cpu/arm740t.h) \
-    $(wildcard include/config/cpu/arm9tdmi.h) \
-    $(wildcard include/config/cpu/arm920t.h) \
-    $(wildcard include/config/cpu/arm922t.h) \
-    $(wildcard include/config/cpu/arm925t.h) \
-    $(wildcard include/config/cpu/arm926t.h) \
-    $(wildcard include/config/cpu/arm940t.h) \
-    $(wildcard include/config/cpu/arm946e.h) \
-    $(wildcard include/config/cpu/arm1020.h) \
-    $(wildcard include/config/cpu/arm1020e.h) \
-    $(wildcard include/config/cpu/arm1022.h) \
-    $(wildcard include/config/cpu/arm1026.h) \
-    $(wildcard include/config/cpu/v6.h) \
-    $(wildcard include/config/cpu/v7.h) \
-  include/asm/cpu-single.h \
-  include/asm/arch/vmalloc.h \
-  include/asm/pgtable-hwdef.h \
-  include/asm-generic/pgtable.h \
-  include/linux/page-flags.h \
-    $(wildcard include/config/s390.h) \
-    $(wildcard include/config/swap.h) \
-  include/linux/vmstat.h \
-    $(wildcard include/config/vm/event/counters.h) \
-  include/linux/kthread.h \
-  include/asm/arch/regs-gpio.h \
-  include/asm-arm/arch/regs-gpioj.h \
-  include/asm/arch/regs-irq.h \
-  include/linux/irq.h \
-    $(wildcard include/config/irq/per/cpu.h) \
-    $(wildcard include/config/irq/release/method.h) \
-    $(wildcard include/config/generic/pending/irq.h) \
-    $(wildcard include/config/irqbalance.h) \
-    $(wildcard include/config/auto/irq/affinity.h) \
-    $(wildcard include/config/generic/hardirqs/no//do/irq.h) \
-  include/asm/irq_regs.h \
-  include/asm-generic/irq_regs.h \
-  include/asm/hw_irq.h \
-    $(wildcard include/config/no/idle/hz.h) \
-  include/asm/mach/irq.h \
+  include/linux/vermagic.h \
+  include/linux/utsrelease.h \
 
-/home/zodiac1111/arm/kernel-mod/mem_test.o: $(deps_/home/zodiac1111/arm/kernel-mod/mem_test.o)
+/home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.o: $(deps_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.o)
 
-$(deps_/home/zodiac1111/arm/kernel-mod/mem_test.o):
+$(deps_/home/zodiac1111/arm/kernel-mod/api/kgen_plat.mod.o):
