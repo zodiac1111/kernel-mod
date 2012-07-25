@@ -40,6 +40,8 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define P_B 0x2
 #define P_C 0x4
 #define P_D 0x8
+#define IOCMD_MOTOR_DIR_FORWARD 4 //电机正转
+#define IOCMD_MOTOR_DIR_REVERSE 5 //电机反转
 /*配置为输入模式*/
 void set_conIN(void)
 {// 00
@@ -74,11 +76,31 @@ void set_alldata(int i)
 	GPJDAT &= ~0xFF;
 	GPJDAT |=i;
 }
+void setGPJ6(int b)
+{
+	if(b==1){
+		GPJDAT |= (0x1<<6);
+	}else{
+		GPJDAT &= ~(0x1<<6);
+	}
+}
+void mymdelay(int i)
+{
+	//非占用的延时
+	set_current_state(TASK_INTERRUPTIBLE);
+	//等到HZ个调度周期=1秒 HZ这个内核设置是200
+	schedule_timeout( i * HZ/1000); //HZ是宏定义
+
+}
 //控制发出的脉冲 相位
 void pulse(unsigned char p,unsigned char delay)
 {
 	set_alldata(p); //ab
-	mdelay(delay);
+	//非占用的延时
+	set_current_state(TASK_INTERRUPTIBLE);
+	//等到HZ个调度周期=1秒 HZ这个内核设置是200
+	schedule_timeout(HZ/2000); //HZ是宏定义
+	
 }
 //向某个方向旋转1个step
 int step(unsigned char dir,unsigned char delay)
@@ -232,7 +254,7 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 
 	int i;int value;
 	char lowValue=0,highValue=0;
-	int ledno=0;
+	//int ledno=0;
 	int ret=0;
 	int stepMotorspeed=2;
 	printk("cmd=%d arg=%ld\n",cmd,arg);
@@ -295,23 +317,31 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			return value;
 			break;
 
-		case 4://正转
+		case IOCMD_MOTOR_DIR_FORWARD://4:正转
 			if(arg<3){
 				printk("the dergee is too small\n");
 				return 0;
 			}
 			set_conAllOUT();
 			for(i=0;i<arg;i++){
-				step(1,2);
+				step(1,stepMotorspeed);
 			}
 			set_alldata(0);
 			break;
-		case 5://反转
+		case IOCMD_MOTOR_DIR_REVERSE: //5:反转
 			set_conAllOUT();
 			for(i=0;i<arg;i++){
-				step(0,2);
+				step(0,stepMotorspeed);
 			}
 			set_alldata(0);
+			break;
+		case 6: //
+			for(i=0;i<300;i++){
+				setGPJ6(1);
+				mymdelay(1000);
+				setGPJ6(0);
+				mymdelay(1000);
+			}
 			break;
 		default:
 			printk("err led number,must be 1~4\n");
