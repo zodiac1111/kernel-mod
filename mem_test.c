@@ -55,7 +55,8 @@ void set_conOUT(void)
 /*配置为输出模式*/
 void set_conAllOUT(void)
 {// 01
-	GPJCON = 0x55;
+	GPJCON &= ~0xFF;//低8位置零
+	GPJCON |= 0x55;//低8位设置10 10 10 10// 0123口输出
 	//GPJCON &= ~(1<<1);
 }
 /*引脚置位*/
@@ -70,7 +71,8 @@ void set_data(int i)
 //all引脚置位
 void set_alldata(int i)
 {
-	GPJDAT =i;
+	GPJDAT &= ~0xFF;
+	GPJDAT |=i;
 }
 //控制发出的脉冲 相位
 void pulse(unsigned char p,unsigned char delay)
@@ -294,6 +296,10 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			break;
 
 		case 4://正转
+			if(arg<3){
+				printk("the dergee is too small\n");
+				return 0;
+			}
 			set_conAllOUT();
 			for(i=0;i<arg;i++){
 				step(1,2);
