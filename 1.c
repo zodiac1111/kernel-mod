@@ -1,4 +1,5 @@
 #include <stdio.h>
+23/07/12 20:41:56
 
 char *strA()
 {

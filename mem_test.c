@@ -35,6 +35,11 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define	GPJCON (*(volatile unsigned int *)S3C2440_GPJCON)
 #define	GPJDAT (*(volatile unsigned int *)S3C2440_GPJDAT)
 #define	GPJUP (*(volatile unsigned int *)S3C2440_GPJUP)
+//步进电机4相位
+#define P_A 0x1
+#define P_B 0x2
+#define P_C 0x4
+#define P_D 0x8
 /*配置为输入模式*/
 void set_conIN(void)
 {// 00
@@ -47,6 +52,12 @@ void set_conOUT(void)
 	GPJCON |= (1<<0);
 	GPJCON &= ~(1<<1);
 }
+/*配置为输出模式*/
+void set_conAllOUT(void)
+{// 01
+	GPJCON = 0x55;
+	//GPJCON &= ~(1<<1);
+}
 /*引脚置位*/
 void set_data(int i)
 {
@@ -55,6 +66,33 @@ void set_data(int i)
 	}else if( i == 1 ){
 		GPJDAT |= (1<<0);
 	}
+}
+//all引脚置位
+void set_alldata(int i)
+{
+	GPJDAT =i;
+}
+//控制发出的脉冲 相位
+void pulse(unsigned char p,unsigned char delay)
+{
+	set_alldata(p); //ab
+	mdelay(delay);
+}
+//向某个方向旋转1个step
+int step(unsigned char dir,unsigned char delay)
+{
+	if(dir==1){
+		pulse(P_D | P_A,delay);
+		pulse(P_C | P_D,delay);
+		pulse(P_B | P_C,delay);
+		pulse(P_A | P_B,delay);
+	}else{
+		pulse(P_A | P_B,delay);
+		pulse(P_B | P_C,delay);
+		pulse(P_C | P_D,delay);
+		pulse(P_D | P_A,delay);
+	}
+	return 0;
 }
 int scull_open(struct inode *inode, struct file *filp)
 {
@@ -153,7 +191,7 @@ ssize_t scull_read(struct file *filp,
 /*写一位命令*/
 void write_bit(char bitValue)
 {
-// see p13 write time slots
+	// see p13 write time slots
 	set_conOUT();
 	//set_data(1);
 	//udelay(1);
@@ -194,6 +232,7 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 	char lowValue=0,highValue=0;
 	int ledno=0;
 	int ret=0;
+	int stepMotorspeed=2;
 	printk("cmd=%d arg=%ld\n",cmd,arg);
 	//第一个参数 第几个LED
 	switch(cmd){
@@ -209,8 +248,8 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			}
 			break;
 		case 3:
-		//	GPJUP=0x0;
-		/*	if(reset_ds18b20()){
+			//	GPJUP=0x0;
+			if(reset_ds18b20()){
 				printk("init 18b20 error\n");
 			}
 			udelay(400);
@@ -218,18 +257,19 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			set_data(1);
 			write_cmd(0xCC);
 			write_cmd(0x44);
-			mdelay(1000);
-		*/
+			mdelay(720);
+
 			//	while(1){
 			if(reset_ds18b20()){
 				printk("init 18b20 error\n");
 			}
-			//udelay(400);
-			//set_conOUT();
-			//set_data(1);
-			write_cmd(0x33);
-			//write_cmd(0xCC);
-			//write_cmd(0xBE);
+			udelay(400);
+			set_conOUT();
+			set_data(1);
+			//mdelay(400);
+			//write_cmd(0x33);
+			write_cmd(0xCC);
+			write_cmd(0xBE);
 			// 读取温度转化数值
 			for(i=0; i<8; i++){
 				if( read_bit() ){
@@ -244,20 +284,28 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 				//udelay(62);
 			}
 			printk("lowValue is %d[0x%x]\n",lowValue,lowValue);
-			printk("highValue is %d[0x%x]\n",highValue,lowValue);
-			highValue <<= 4;
-			highValue |= ((lowValue&0xf0)>>4) ;
-			printk("kernel is %d\n",highValue);
-			
+			printk("highValue is %d[0x%x]\n",highValue,highValue);
+			value = highValue * 256 +lowValue;
+			//highValue |= ((lowValue&0xf0)>>4) ;
+			printk("kernel is %d\n",value);
+
 			//mdelay(600);	}
-			return highValue;
+			return value;
 			break;
-			
-		case 4:
-			ledno=0x80;//0b1000 0000
+
+		case 4://正转
+			set_conAllOUT();
+			for(i=0;i<arg;i++){
+				step(1,2);
+			}
+			set_alldata(0);
 			break;
-		case 5:	//利用ioctl创建线程
-			//return 0;
+		case 5://反转
+			set_conAllOUT();
+			for(i=0;i<arg;i++){
+				step(0,2);
+			}
+			set_alldata(0);
 			break;
 		default:
 			printk("err led number,must be 1~4\n");

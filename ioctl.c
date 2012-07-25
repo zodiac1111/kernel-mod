@@ -13,6 +13,8 @@
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <ctype.h>
+#define NUM_PER_DEGREE (512.0/360.0) //512个脉冲每圈
+int degree=0;//旋转角度
 struct st{
 	int len;
 	char *p;
@@ -25,9 +27,9 @@ int main(int argc,char* argv[])
 	int ret=0;
 	int arg=0;
 	struct st st1;
-	if(argc!=3){
-		printf("arg c must be 3\n"
-				"usage:ioctl <cmd> <arg>\n");
+	if(argc<2){
+		printf("arg c must be 2\n"
+				"usage:ioctl <cmd> [<arg>]\n");
 		return -1;
 	}
 	fd=open("/dev/my",O_RDWR);
@@ -38,13 +40,17 @@ int main(int argc,char* argv[])
 		usleep(100000);
 	}
 	cmd=strtoul(argv[1],0,10);
-	st1.len=strlen(argv[2])+1;
-	st1.p=argv[2];
+	//st1.len=strlen(argv[2])+1;
+	//st1.p=argv[2];
 	//ret =ioctl(fd,cmd,&st1);
 	//for led ctl
-	arg=strtoul(argv[2],0,10);
+	if(argv[2]!=NULL){
+		arg=strtoul(argv[2],0,10);
+		degree=arg* NUM_PER_DEGREE;
+	//	
+	}
 	//ret =ioctl(fd,3,3);
-	ret =ioctl(fd,cmd,arg);
+	ret =ioctl(fd,cmd,degree);
 	usleep(100000);
 	//返回值放在errno里面了
 	printf("err %d\n", errno);
