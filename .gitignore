@@ -19,6 +19,7 @@
 a.out
 app
 ioctl
+wdt
 *.ko
 *.mod*
 #qt项目配置文件
