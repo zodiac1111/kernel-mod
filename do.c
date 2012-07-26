@@ -42,8 +42,6 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define P_D 0x8
 #define IOCMD_MOTOR_DIR_FORWARD 4 //电机正转
 #define IOCMD_MOTOR_DIR_REVERSE 5 //电机反转
-char tempbuf[1000]={0};
-int rw=0;
 /*配置为输入模式*/
 void set_conIN(void)
 {// 00
@@ -102,7 +100,7 @@ void pulse(unsigned char p,unsigned char delay)
 	set_current_state(TASK_INTERRUPTIBLE);
 	//等到HZ个调度周期=1秒 HZ这个内核设置是200
 	schedule_timeout(HZ/2000); //HZ是宏定义
-
+	
 }
 //向某个方向旋转1个step
 int step(unsigned char dir,unsigned char delay)
@@ -184,11 +182,13 @@ unsigned int read_bit(void)
 	udelay(2);
 	return ret;
 }
+char tempbuf[1000]={0};
 int scull_release(struct inode *inode, struct file *filp)
 {
 	printk(KERN_ALERT "*k* scull close\n");
 	return 0;
 }
+int rw=0;
 ssize_t scull_write(struct file *filp,
 		const char __user *buf, 
 		size_t count, 
@@ -271,7 +271,7 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 				udelay(62);	
 			}
 			break;
-		case 3://温度传感器
+		case 3:
 			//	GPJUP=0x0;
 			if(reset_ds18b20()){
 				printk("init 18b20 error\n");
@@ -316,12 +316,11 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			//mdelay(600);	}
 			return value;
 			break;
-		//步进电机
+
 		case IOCMD_MOTOR_DIR_FORWARD://4:正转
 			if(arg<3){
 				printk("the dergee is too small\n");
-				//return 0;
-				arg=3;
+				return 0;
 			}
 			set_conAllOUT();
 			for(i=0;i<arg;i++){
@@ -336,22 +335,24 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			}
 			set_alldata(0);
 			break;
-		//电磁铁
 		case 6: //
-			GPJCON &= ~(0x3<<12);//置零 11 oooo oooo oooo
-			GPJCON |= 0x1<<12;//置01oo oooo oooo// 6pin out
+			GPJCON &= ~0x3000;//置零 11 oooo oooo oooo
+			GPJCON |= 0x1000;//置10oo oooo oooo// 6pin out
 			//GPJCON |= 0x500;
-			for(i=0;i<arg;i++){
-				setGPJ6(1);
-				mymdelay(1000);
-				setGPJ6(0);
-				mymdelay(1000);
-			}
+			//for(i=0;i<arg;i++){
+				setGPJ6(arg);
+			//	mymdelay(1000);
+			//	setGPJ6(0);
+			//	mymdelay(1000);
+			//}
 			break;
 		default:
-			printk("*k* err : unknow command \n");
+			printk("err led number,must be 1~4\n");
 			return -1001;
 	}
+
+
+
 	return 0;
 }
 #endif
@@ -374,11 +375,21 @@ static int __init hello_init(void)
 	int ret;
 	printk(KERN_ALERT "*k* insmod:mem_test.ko\n");
 	//注册
-	ret=register_chrdev(422, "my char dev ", &fops);
+	ret=register_chrdev(423, "my char dev ", &fops);
 	if(ret<0){
 		printk("error\n");
 		return -1;
 	}
+	//地址重映射到内核态
+	//ioremap();
+	//paddr=ioremap_nocache(0x56000000,4096);
+	//GPJCON =(int)paddr+0xd0;//
+	//GPJCON =(volatile unsigned int *)S3C2440_GPJCON;//
+	//GPJDAT =(int)paddr+0xd4;//
+	//GPJDAT =(volatile unsigned int *)S3C2440_GPJDAT;//
+	//printk("ioremap GPJCON=%x S3C2410_GPJDAT=%x \n",GPJCON,S3C2440_GPJCON);
+	// (*(volatile unsigned int *)S3C2410_GPHDAT)=1;
+	//printk("kernel ioremap\n");
 	return 0;
 }
 static void hello_exit(void)
@@ -387,7 +398,7 @@ static void hello_exit(void)
 	//iounmap(paddr);
 	printk(KERN_ALERT "*k* rmmod: mem_test.ko\n");
 	//反注册
-	unregister_chrdev(422, "my char dev");
+	unregister_chrdev(423, "my char dev");
 
 }
 //模块初始化

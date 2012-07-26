@@ -2,6 +2,7 @@ LINUX_KERNEL_DIR =/home/zodiac1111/Downloads/techer-ftp/devboard/kernel/utu-Linu
 #LINUX_KERNEL_DIR =/home/zodiac1111/Downloads/linux-3.4.4
 PRODUCT_DRIVER_DIR = `pwd`
 obj-m += mem_test.o
+obj-m += do.o
 all:  plat module app wdt ioctl 18b20
 #	make module
 #	make app
@@ -9,10 +10,10 @@ all:  plat module app wdt ioctl 18b20
 #
 clear:
 	clear
-module:mem_test.c
+module:mem_test.c do.c
 	make -C $(LINUX_KERNEL_DIR) \
 		SUBDIRS=$(PRODUCT_DRIVER_DIR) modules
-	cp mem_test.ko /home/zodiac1111/tftpboot
+	cp mem_test.ko do.ko /home/zodiac1111/tftpboot
 #app
 app:app.c
 	@echo "***** cp to tftpboot ******"

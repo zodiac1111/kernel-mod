@@ -27,19 +27,24 @@ int main(int argc,char* argv[])
 	int ret=0;
 	int arg=0;
 	struct st st1;
+	cmd=strtoul(argv[1],0,10);
+	
 	if(argc<2){
 		printf("arg c must be 2\n"
 				"usage:ioctl <cmd> [<arg>]\n");
 		return -1;
 	}
-	fd=open("/dev/my",O_RDWR);
+	if(cmd == 6){
+		fd=open("/dev/my1",O_RDWR);
+	}else{
+		fd=open("/dev/my",O_RDWR);
+	}
 	if(fd==-1){
 		perror("open ");
 	}else{
 		printf("fd is %d\n",fd);
 		usleep(100000);
 	}
-	cmd=strtoul(argv[1],0,10);
 	//st1.len=strlen(argv[2])+1;
 	//st1.p=argv[2];
 	//ret =ioctl(fd,cmd,&st1);
