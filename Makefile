@@ -31,6 +31,6 @@ ioctl:ioctl.c
 	arm-linux-gcc 18b20.c -o 18b20 -Wall
 	cp 18b20 /home/zodiac1111/tftpboot  
 clean:
-	rm -rf *.ko  *.o *.swp *.cmd app a.out wdt
+	rm -rf *.ko  *.o *.swp *.cmd app a.out wdt *~ ioctl 18b20
 plat:
 	make -C api 
