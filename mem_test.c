@@ -80,7 +80,7 @@ void set_alldata(int i)
 }
 void setGPJ6(int b)
 {
-	if(b==1){
+	if(b!=0){
 		GPJDAT |= (0x1<<6);
 	}else{
 		GPJDAT &= ~(0x1<<6);
@@ -101,7 +101,8 @@ void pulse(unsigned char p,unsigned char delay)
 	//非占用的延时
 	set_current_state(TASK_INTERRUPTIBLE);
 	//等到HZ个调度周期=1秒 HZ这个内核设置是200
-	schedule_timeout(HZ/2000); //HZ是宏定义
+#define MOTOR_DELAY 1
+	schedule_timeout(MOTOR_DELAY * HZ/2000); //HZ是宏定义
 
 }
 //向某个方向旋转1个step
@@ -143,14 +144,14 @@ unsigned int reset_ds18b20(void)
 	udelay(1);
 	printk("1 out 1 0x%08x\n",GPJDAT);
 	set_data(0);
-	udelay(480);// 480us minimum
+	udelay(500);// 480us minimum
 	printk("2 out 0+480 0x%08x\n",GPJDAT);
 	//set_data(1);
 	//printk("2.5 out 1 0x%08x\n",GPJDAT);
-	//udelay(20);
+	udelay(60);
 	set_conIN();
 	//printk("3 in 0x%08x\n",GPJDAT);
-	udelay(60);
+	udelay(10);
 
 	//printk("4 in+60 0x%08x\n",*(int *)GPJDAT);
 	//udelay(1);
@@ -159,28 +160,27 @@ unsigned int reset_ds18b20(void)
 	/*稍做延时后 如果
 	 * x=0则初始化成功
 	 * x=1则初始化失*/
-	retValue = -((GPJDAT ) & 0x01);
+	while((GPJDAT ) & 0x01);
 	printk("18b20 init is 0x%08x\n",GPJDAT);
 	//udelay(1);
-	printk("18b20 init is 0x%08x\n",GPJDAT);
-	printk("18b20 init is 0x%08x\n",GPJDAT);
-	printk("18b20 init is 0x%08x\n",GPJDAT);
-	printk("18b20 init is %d\n",retValue);
-	udelay(480);
+	//printk("18b20 init is 0x%08x\n",GPJDAT);
+	//printk("18b20 init is 0x%08x\n",GPJDAT);
+	//printk("18b20 init is 0x%08x\n",GPJDAT);
+	//printk("18b20 init is %d\n",retValue);
+	mdelay(3);
 	return retValue;
 }
 unsigned int read_bit(void)
 {
 	int ret=0;
 	set_conOUT();
-	//set_data(1);
-	//__udelay(2);
 	set_data(0);//拉低
 	udelay(2); //大于1us
+	//set_data(1);//? 拉高?为什么
 	set_conIN(); //释放
 	udelay(8);
 	ret=((GPJDAT) & 0x01);
-	udelay(50);
+	udelay(80);
 	udelay(2);
 	return ret;
 }
@@ -215,21 +215,20 @@ ssize_t scull_read(struct file *filp,
 /*写一位命令*/
 void write_bit(char bitValue)
 {
+//TODO 弄清楚怎么写
 	// see p13 write time slots
 	set_conOUT();
-	//set_data(1);
-	//udelay(1);
 	set_data(0);
-	//udelay(15);
+	udelay(5);
 	if( bitValue == 1 ){
-		udelay(2);//>1us <15us
-		set_conIN();//释放
-		udelay(61);
+		//udelay(2);//>1us <15us
+		set_data(1);
 	}else{
-		//set_data(0);
-		udelay(63);//>60//保持拉低60
-		set_conIN();//释放
+		set_data(0);
 	}
+	udelay(63);//>60//保持拉低60
+	set_data(1);
+	set_conIN();//释放
 	udelay(2);//slot间间隔
 }
 /*写命令 1字节*/
@@ -275,19 +274,20 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			//	GPJUP=0x0;
 			if(reset_ds18b20()){
 				printk("init 18b20 error\n");
+				return -2;
 			}
-			udelay(400);
+			//udelay(400);
 			set_conOUT();
 			set_data(1);
 			write_cmd(0xCC);
 			write_cmd(0x44);
-			mdelay(720);
-
+			mymdelay(1000);//等待
 			//	while(1){
 			if(reset_ds18b20()){
 				printk("init 18b20 error\n");
+				return -3;
 			}
-			udelay(400);
+			//udelay(400);
 			set_conOUT();
 			set_data(1);
 			//mdelay(400);
@@ -341,12 +341,13 @@ int scull_ioctl(struct inode *inode,struct file *filep,
 			GPJCON &= ~(0x3<<12);//置零 11 oooo oooo oooo
 			GPJCON |= 0x1<<12;//置01oo oooo oooo// 6pin out
 			//GPJCON |= 0x500;
-			for(i=0;i<arg;i++){
+			/* for(i=0;i<arg;i++){
 				setGPJ6(1);
 				mymdelay(1000);
 				setGPJ6(0);
 				mymdelay(1000);
-			}
+			}*/
+			setGPJ6(arg);//zero or one Digit out.
 			break;
 		default:
 			printk("*k* err : unknow command \n");

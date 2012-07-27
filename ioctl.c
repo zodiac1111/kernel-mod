@@ -34,11 +34,8 @@ int main(int argc,char* argv[])
 				"usage:ioctl <cmd> [<arg>]\n");
 		return -1;
 	}
-	if(cmd == 6){
-		fd=open("/dev/my1",O_RDWR);
-	}else{
-		fd=open("/dev/my",O_RDWR);
-	}
+	fd=open("/dev/my",O_RDWR);
+	//fd=open("/dev/DS18B20-drv0",O_RDWR);
 	if(fd==-1){
 		perror("open ");
 	}else{
