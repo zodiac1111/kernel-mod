@@ -1,7 +1,7 @@
-cmd_/home/zodiac1111/arm/kernel-mod/mem_test.o := arm-linux-gcc -Wp,-MD,/home/zodiac1111/arm/kernel-mod/.mem_test.o.d  -nostdinc -isystem /home/zodiac1111/Mysoft/usr/local/arm/3.4.1/bin/../lib/gcc/arm-linux/3.4.1/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -mlittle-endian -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -O2 -marm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -mapcs-32 -mno-thumb-interwork -D__LINUX_ARM_ARCH__=4 -march=armv4t -mtune=arm9tdmi -malignment-traps -msoft-float -Uarm -fno-omit-frame-pointer -fno-optimize-sibling-calls  -Wdeclaration-after-statement     -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(mem_test)"  -D"KBUILD_MODNAME=KBUILD_STR(mem_test)" -c -o /home/zodiac1111/arm/kernel-mod/mem_test.o /home/zodiac1111/arm/kernel-mod/mem_test.c
+cmd_/home/zodiac1111/arm/kernel-mod/ts.o := arm-linux-gcc -Wp,-MD,/home/zodiac1111/arm/kernel-mod/.ts.o.d  -nostdinc -isystem /home/zodiac1111/Mysoft/usr/local/arm/3.4.1/bin/../lib/gcc/arm-linux/3.4.1/include -D__KERNEL__ -Iinclude  -include include/linux/autoconf.h -mlittle-endian -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -O2 -marm -fno-omit-frame-pointer -mapcs -mno-sched-prolog -mapcs-32 -mno-thumb-interwork -D__LINUX_ARM_ARCH__=4 -march=armv4t -mtune=arm9tdmi -malignment-traps -msoft-float -Uarm -fno-omit-frame-pointer -fno-optimize-sibling-calls  -Wdeclaration-after-statement     -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ts)"  -D"KBUILD_MODNAME=KBUILD_STR(ts)" -c -o /home/zodiac1111/arm/kernel-mod/ts.o /home/zodiac1111/arm/kernel-mod/ts.c
 
-deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
-  /home/zodiac1111/arm/kernel-mod/mem_test.c \
+deps_/home/zodiac1111/arm/kernel-mod/ts.o := \
+  /home/zodiac1111/arm/kernel-mod/ts.c \
   include/linux/init.h \
     $(wildcard include/config/modules.h) \
     $(wildcard include/config/hotplug.h) \
@@ -442,6 +442,6 @@ deps_/home/zodiac1111/arm/kernel-mod/mem_test.o := \
   include/asm/device.h \
     $(wildcard include/config/dmabounce.h) \
 
-/home/zodiac1111/arm/kernel-mod/mem_test.o: $(deps_/home/zodiac1111/arm/kernel-mod/mem_test.o)
+/home/zodiac1111/arm/kernel-mod/ts.o: $(deps_/home/zodiac1111/arm/kernel-mod/ts.o)
 
-$(deps_/home/zodiac1111/arm/kernel-mod/mem_test.o):
+$(deps_/home/zodiac1111/arm/kernel-mod/ts.o):

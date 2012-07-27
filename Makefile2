@@ -1,0 +1,3 @@
+all:
+	arm-linux-gcc ser.c -o ser -Wall
+	cp ser /home/zodiac1111/tftpboot

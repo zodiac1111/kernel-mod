@@ -26,7 +26,7 @@ int main(int argc,char* argv[])
 	int cmd=4;
 	int ret=0;
 	int arg=0;
-	struct st st1;
+//	struct st st1;
 	cmd=strtoul(argv[1],0,10);
 	
 	if(argc<2){
@@ -34,7 +34,7 @@ int main(int argc,char* argv[])
 				"usage:ioctl <cmd> [<arg>]\n");
 		return -1;
 	}
-	fd=open("/dev/my",O_RDWR);
+	fd=open("/dev/ts0",O_RDWR);
 	//fd=open("/dev/DS18B20-drv0",O_RDWR);
 	if(fd==-1){
 		perror("open ");
@@ -55,8 +55,10 @@ int main(int argc,char* argv[])
 	ret =ioctl(fd,cmd,degree);
 	usleep(100000);
 	//返回值放在errno里面了
-	printf("err %d\n", errno);
-	printf("ret: %d cmd %d, retval=%f \n",ret,cmd,ret*0.0625);
+	if(ret<0){
+		printf("err %d\n", errno);
+	}
+	printf("ret: %d cmd %d, retval=%.2f \n",ret,cmd,ret*0.0625);
 	usleep(100000);
 	close(fd);
 	return 0;
