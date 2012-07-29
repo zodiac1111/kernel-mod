@@ -4,6 +4,7 @@ PRODUCT_DRIVER_DIR = `pwd`
 obj-m += mem_test.o
 obj-m += do.o
 obj-m += ts.o
+obj-m += motor.o
 all:  plat module app wdt ioctl 18b20
 #	make module
 #	make app
@@ -40,6 +41,11 @@ ts:ts.c ts-ctl.c
 	arm-linux-gcc ts-ctl.c -o ts-ctl -Wall
 	cp ts.ko /home/zodiac1111/tftpboot
 	cp ts-ctl /home/zodiac1111/tftpboot
-
+motor:motor.c motor-ctl.c
+	make -C $(LINUX_KERNEL_DIR) \
+		SUBDIRS=$(PRODUCT_DRIVER_DIR) modules
+	arm-linux-gcc motor-ctl.c -o motor-ctl -Wall
+	cp motor.ko /home/zodiac1111/tftpboot
+	cp motor-ctl /home/zodiac1111/tftpboot
 clean:
-	rm -R -rf *.ko  *.o *.swp *.cmd app a.out wdt *~ ioctl 18b20 ts-ctl
+	rm -R -rf *.ko  *.o *.swp *.cmd app a.out wdt *~ ioctl 18b20 ts-ctl ser ds18b20 motor

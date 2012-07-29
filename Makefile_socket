@@ -1,0 +1,5 @@
+CC=gcc
+all:
+	arm-linux-gcc x.c -o motor -Wall
+	gcc tcp_c.c -o appctl -Wall
+	cp motor /home/zodiac1111/tftpboot
