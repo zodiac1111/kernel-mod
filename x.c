@@ -1,5 +1,5 @@
 /* 本地应用层接收程序
- * 负责接收远程socket指令,并按照指令调用motor.ko模块
+ * 负责接收远程socket指令,并按照指令调用motor.ko模块 motor 运行在板子上的服务程序
  * 控制步进电机,或者读取温度传感器并返回给远程控制端.
  * */
 
@@ -18,7 +18,7 @@
 //监听端口
 #define portnumber 13333
 //监听/返回(发送)的IP
-#define CTL_IP 192.168.1.200
+#define CTL_IP "192.168.1.200"
 struct cmd{
 	char obj;//m / t
 	signed int degree;//0~xxx -/+ dir
@@ -51,9 +51,34 @@ int motor(struct cmd cmd1)
 	return 0;
 }
 //温度传感器
-int ts(void)
-{
-	return 0;
+float ts(void)
+{	
+	float temper=0;
+	int fd;
+	int ret=0;
+	fd=open("/dev/ts0",O_RDWR);
+	if(fd==-1){
+		perror("open ");
+		return -1001;
+	}
+	ret = ioctl(fd,0,0);//后面参数无所谓
+	//返回值放在errno里面了
+	if(ret<0){
+		printf("err %d\n", errno);
+		perror("ioctl");
+		close(fd);
+		return -999;
+	}else{
+		printf("ret: %d retval=%.2f C \n",ret,ret*0.0625);
+	}
+	if(ret==1360){//错误的 即返回0x85
+		close(fd);		
+		return -999;
+	}
+	//usleep(100000);
+	
+	temper=ret*0.0625;
+	return temper;
 }
 int main(int ac,char*av[])
 {
@@ -64,7 +89,7 @@ int main(int ac,char*av[])
 	int nbytes;
 	struct cmd cmd1;
 	char buffer[1024];
-
+	float temper=0;
 	/*服务器端开始建立sockfd描述符*/
 	if((sockfd=socket(AF_INET,SOCK_STREAM,0))==-1)//AF_INET:IPV4;SOCK_STREAM:TCP
 	{
@@ -117,7 +142,15 @@ int main(int ac,char*av[])
 			printf("degree= %d\n",cmd1.degree);
 			motor(cmd1);	
 		}else{
-			ts();		
+			temper=ts();
+			//char test[4]={0x41,0xf9,0x80,0x00};
+			//char *test
+			//test[0]=temper/10+'0';
+			//test[0]=temper/10+'0';			
+			//(char [4])temper;
+			//int i=(int)temper;
+			write(new_fd,&temper,sizeof(temper));
+			//write(new_fd,test,sizeof(test));		
 		}
 		/*这个通讯已经结束*/
 		close(new_fd);

@@ -28,8 +28,9 @@ int main(int argc,char* argv[])
 		printf("err %d\n", errno);
 		perror("ioctl");
 		return -1002;
+	}else{
+		printf("ret: %d retval=%.2f C \n",ret,ret*0.0625);
 	}
-	printf("ret: %d retval=%.2f C \n",ret,ret*0.0625);
 	//usleep(100000);
 	close(fd);
 	return 0;

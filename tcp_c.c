@@ -1,3 +1,6 @@
+/*
+	调试板子上网络层服务程序 motor 用例子.
+*/
 #include<stdio.h>
 #include<stdlib.h>
 #include<errno.h>
@@ -7,7 +10,6 @@
 #include<netinet/in.h>
 #include<sys/socket.h>
 #include<unistd.h>
-
 #define portnumber 13333
 struct cmd{
 	char obj;//m / t
@@ -20,6 +22,7 @@ int main(int ac,char*av[])
 	//char buffer[1024];
 	struct sockaddr_in server_addr;
 	struct hostent *host;
+	float temper;
 	/*使用hostname查询host名字*/
 	if(ac!=2)
 	{
@@ -56,8 +59,12 @@ int main(int ac,char*av[])
 		printf("Please input motor degree unsigned integer number\n");
 		printf("signed  motor dir +=Forward -=Resaves\n");
 		scanf("%d",&cmd1.degree);
+		write(sockfd,&cmd1,sizeof(struct cmd));
+	}else{//温度传感器
+		write(sockfd,&cmd1,sizeof(struct cmd));
+		read(sockfd,&temper,sizeof(temper));
+		printf("temperature is %f \n",temper);
 	}
-	write(sockfd,&cmd1,sizeof(struct cmd));
 	/*通讯结束*/
 	close(sockfd);
 	exit(0);
